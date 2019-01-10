@@ -1,0 +1,188 @@
+body {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    
+    overflow-y: hidden;
+    position: relative;
+    height: 100%;
+}
+.input_images {
+    height: 90%;
+    width: 75%;
+    border: 0.1vw solid #1d3557;
+    overflow-y: auto;
+    text-align: center;
+    
+}
+#images_and_frames_and_buttons {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+.images_and_frames {
+    height: 80%;
+    width: 85%;
+    border: 0.1vw solid #1d3557;
+    overflow-y: auto;
+    text-align: center;
+    display: block;
+    margin: 10% auto 2%;
+}
+#generate_story_button {
+    width: 85%;
+    height: 10%;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+}
+.image_and_frame {
+    width: 85%;
+    border: 0.1vw solid #1d3557;
+    text-align: center;
+    margin: 2vh auto;
+}
+.single_frame {
+    border: 0.1vw solid black;
+    padding: 1vh;
+}
+
+.dummy_showing {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+#gallery {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+.swiper-container {
+    height: 90%;
+    width: 85%;
+    
+    text-align: center;
+    margin: 10% auto;
+}
+
+.swipe_content {
+    width: 100%;
+    height: calc(100% - 30px);
+    border: 0.0vw solid #1d3557;
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+  }
+
+.button_area {
+    margin-left: 5%;
+    width: 10%;
+    
+    
+}
+
+#camera_div {
+    padding: 2.5%;
+    width: 90%;
+    height: 90%;
+    border: 0.1vw solid #1d3557;
+    position: absolute;
+    z-index: 15;
+    top: 5%;
+    left: 5%;
+    display: flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+#camera_stream {
+    height: 80vw;
+    width: 80vw; 
+    margin: 0 auto;
+    border: 0.1vw solid #1d3557;
+}
+#camera_result {
+    height: 80vw;
+    width: 80vw; 
+    border: 0.1vw solid #1d3557;
+}
+.camera_button{
+    width: 40%;
+}
+#default_images_and_add {
+    padding: 2.5%;
+    width: 90%;
+    height: 90%;
+    border: 0.1vw solid #1d3557;
+    position: absolute;
+    z-index: 10;
+    top: 5%;
+    left: 5%;
+}
+
+.used_image {
+    margin: 1vh auto;
+}
+
+.selected_image {
+    border: 2vw solid #4f84ca;
+}
+
+
+#default_images {
+    height: 85%;
+    width: 100%; 
+    overflow-y: auto;
+    display: flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+}
+
+.showing {
+    margin: 1% auto;
+    padding: 0 2%;
+    border: 0.0vw solid #1d3557;
+    display: flex;
+    flex-direction:column;
+    justify-content:center;
+    overflow-y: auto;
+}
+.showing_terms {
+    margin: 1% auto;
+    padding: 0 2%;
+    border: 0.0vw solid #1d3557;
+    display: flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    overflow-y: auto;
+}
+
+#buttons {
+    margin-top: 5%;
+    height: 10%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+}
+
+#default_images > img {
+    margin-top: 2.5%;
+}
+#default_images > canvas {
+    margin-top: 2.5%;
+}
+
+.img_button {
+    width: 75%;
+    margin: 3vh auto;
+    display: block;
+  }

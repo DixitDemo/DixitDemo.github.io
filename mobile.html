@@ -1,0 +1,112 @@
+<html>
+    <head>
+        <title>Dixit - Interactive Visual Storytelling System via Term Manipulation</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+        <script
+          src="https://code.jquery.com/jquery-1.12.4.min.js"
+          integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+          crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="starability/starability-css/starability-all.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.6/css/swiper.min.css">
+        <link rel="stylesheet" type="text/css" href="mobile.css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        
+        
+        <script>
+            console.log(screen.width);
+           
+
+            window.FileAPI = { 
+                staticPath: 'FileAPI/dist/', 
+                cors: true 
+            };
+            var socket = io("https://doraemon.iis.sinica.edu.tw/", {path: "/vssocketio/socket.io/"});
+
+            //socket.binaryType = "arraybuffer";  
+            socket.on('connect', function(){
+                console.log('ws connect');
+            });
+
+
+        </script>
+        <script src="FileAPI/dist/FileAPI.min.js"></script>
+        <script src="Sortable/Sortable.js"></script>
+        <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+        </script>
+        
+        
+    </head>
+     <body>
+            <img id="waiting_img" src="img/waiting.gif" style="display: none; z-index: 100; position: absolute; top: 50%; left: 50%; width:200px; height:200px; margin-top:-100px; margin-left:-100px;">
+         <div class='input_images' id="input_images"></div>
+         <div id="images_and_frames_and_buttons" style="display: none;">
+             <div class='images_and_frames' id="images_and_frames" ></div>
+            <button id='generate_story_button' onclick="generate_story();">Generate Story!</button>
+        </div>
+        <div class='gallery' id="gallery" style="display: none;" >
+            <!-- Slider main container -->
+            <div class="swiper-container">
+                <!-- Additional required wrapper -->
+                <div class="swiper-wrapper">
+                    <!-- Slides -->
+                    <div class="swiper-slide">
+                        <div class="swipe_content" id="show_images_and_terms" style="flex-direction: row;">
+                            <div id="show_images" style="width: 50%;" class="dummy_showing"></div>
+                            <div id="show_terms" style="width: 50%;" class="dummy_showing"></div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="swipe_content" id="show_images_and_storys" style="flex-direction: row;">
+                            <div id="show_images2" style="width: 50%;" class="dummy_showing"></div>
+                            <div id="show_storys" style="width: 50%;" class="dummy_showing" ></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- If we need pagination -->
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+         <div class='button_area' id="button_area">
+            <a href="#" onclick="console.log('clear img');" id="clear_img">
+                    <img class="img_button" src="img/trash.png" alt="reset" title="reset">
+                </a>
+                <a href="#" onclick="add();">
+                    <img class="img_button" src="img/add.png" alt="add images from computer" title="add images from computer">
+                </a>
+                <a href="#" onclick="edit();">
+                    <img class="img_button" src="img/edit.png" alt="select images again" title="select images again">
+                </a> 
+                <a href="#" onclick="submit();">
+                    <img class="img_button" src="img/submit.png" alt="use these images to generate frames" title="use these images to generate frames">
+                </a>
+         </div>
+         <div id="default_images_and_add" hidden>
+            <div id="default_images"></div>
+            <div id="buttons">
+                <button onclick="add_from_device();">add from your device</button>
+                <input id="input_file" type="file" hidden multiple>
+                <button onclick="use_these_images();">use these images!</button>
+            </div>
+         </div>
+         <div id="camera_div" style="display:none;">
+            <video id="camera_stream" width="300" height="300" autoplay playsinline></video>
+	        <canvas id="camera_result" style="display:none;" width="300" height="300"></canvas>
+            <div id="buttons">
+                <input class="camera_button" type="button" disabled="true" value="Give Up"></input>
+                <input class="camera_button" type="button" disabled="true" value="Flip"></input>
+                <input class="camera_button" id="camera_take_picture" type="button" disabled="true" value="Take Picture"></input>
+            </div>
+         </div>
+         
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.4.6/js/swiper.min.js"></script>
+         <script src="mobile.js"></script>
+         
+    </body>
+</html>

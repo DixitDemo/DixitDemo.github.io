@@ -1,0 +1,157 @@
+<html>
+    <head>
+        <title>Dixit - Interactive Visual Storytelling System via Term Manipulation</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="starability/starability-css/starability-all.css">
+        <link rel="stylesheet" type="text/css" href="main.css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+        <script
+          src="https://code.jquery.com/jquery-1.12.4.min.js"
+          integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+          crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="fitty.min.js"></script>
+        <script>
+            console.log(screen.width);
+            if (screen.width <= 699) {
+            document.location = "mobile.html";
+            }
+
+            window.FileAPI = { 
+                staticPath: 'FileAPI/dist/', 
+                cors: true 
+            };
+            var socket = io("https://doraemon.iis.sinica.edu.tw/", {path: "/vssocketio/socket.io/"});
+
+            //socket.binaryType = "arraybuffer";  
+            socket.on('connect', function(){
+                console.log('ws connect');
+            });
+
+
+        </script>
+        <script src="FileAPI/dist/FileAPI.min.js"></script>
+        <script src="Sortable/Sortable.js"></script>
+        <script
+            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+        </script>
+        
+        
+    </head>
+     <body>
+        <div class="wrapper" id="wrapper">
+            <div class="grid-item img_area">
+                <div class="name" alt="You can use + to upload 5 images and submit it to our model.">Image</div>
+                <div class="js-fileapi-wrapper upload-btn">
+                    <input id="choose" name="files" type="file" multiple style="display:none" />
+                </div>
+                <div id="images"><!-- previews --></div>
+                <div id="button_area">
+                    <a href="#" onclick="console.log('clear img');" id="clear_img">
+                        <img class="img_button" src="img/trash.png" alt="reset" title="reset">
+                    </a>
+                    <a href="#" onclick="clear_area('all');document.getElementById('choose').click();initial_usualFrame();">
+                        <img class="img_button" src="img/add.png" alt="add images from computer" title="add images from computer">
+                    </a>
+                    <a href="#" onclick="edit();">
+                        <img class="img_button" src="img/edit.png" alt="select images again" title="select images again">
+                    </a> 
+                    <a href="#" onclick="submit();">
+                        <img class="img_button" src="img/submit.png" alt="use these images to generate frames" title="use these images to generate frames">
+                    </a>
+
+                    
+                </div>
+            </div>
+            <div id="default_images" class="grid-item default_images">
+                <div class="name" alt="Some images you can use" >Images Pool</div>
+                <div id="default_images_content" style="overflow-y:auto;"></div>
+            </div>
+            <div class="grid-item sep_story" hidden>
+                <div class="name" alt="Final story will show here.">Story</div>
+                <div style="display:block; width:2vw; height:30px; visibility:hidden;" >hidden</div>
+                <div id="sep_story_content">
+                    <span id="sep_story1" class="sep_story_span"></span>
+                    <span id="sep_story2" class="sep_story_span"></span>
+                    <span id="sep_story3" class="sep_story_span"></span>
+                    <span id="sep_story4" class="sep_story_span"></span>
+                    <span id="sep_story5" class="sep_story_span"></span>
+                </div>
+                <button id="story_hidden" style="display:block; width:3em; visibility:hidden; float:right;" >hidden</button>
+                <form style="margin-bottom: 0; height: 7vh; position: absolute; bottom: -3vh; right: 0.75vw;">
+                        <fieldset class="starability-basic" style="height: 40px; z-index: 98; display: inline-block;">
+                            
+                            <input type="radio" id="rate1" name="rating" value="1" />
+                            <label for="rate1" title="1">1 star</label>
+                            <input type="radio" id="rate2" name="rating" value="2" />
+                            <label for="rate2" title="2">2 stars</label>
+                            <input type="radio" id="rate3" name="rating" value="3" />
+                            <label for="rate3" title="3">3 stars</label>
+                            <input type="radio" id="rate4" name="rating" value="4" />
+                            <label for="rate4" title="4">4 stars</label>
+                            <input type="radio" id="rate5" name="rating" value="5" />
+                            <label for="rate5" title="5">5 stars</label>
+                        </fieldset>
+ 
+                        <button id="modify_story" style="float:right; margin-left: 0.5vw;" disabled>Modify Story</button>  
+                        <button id="modify_done" style="float:right; margin-left: 0.5vw;" hidden>Modify Done</button> 
+                        <button id="submit_star" style="float:right; margin-left: 0.5vw;" disabled>Submit review</button>              
+                    </form>
+            </div>
+            <div class="grid-item usualFrameList">
+                <div style="display:block; width:0vw; height:0px; visibility:hidden;" >hidden</div>
+                <div id=search>
+                    <input type="text" id="search_text" rows="1"></input>
+                    <button id="search_button" onclick="search();">Search</button>
+                </div>
+                <ul id="usualFrameList1" class="list-group usualUl"> 
+                </ul>
+
+                <ul id="usualFrameList2" class="list-group usualUl"> 
+                </ul>
+            </div>
+            <div class="grid-item usedFrameList" hidden>
+                <div class="name" alt="We generate frames given your input images. You can put frames in any order, or you can use frames on right and side.">Term</div>
+                <div style="display:block; width:2vw; height:30px; visibility:hidden;" >hidden</div>
+                <ul id="usedFrameList1" class="list-group"></ul>
+                <ul id="usedFrameList2" class="list-group"></ul>
+                <ul id="usedFrameList3" class="list-group"></ul>
+                <ul id="usedFrameList4" class="list-group"></ul>
+                <ul id="usedFrameList5" class="list-group"></ul>
+                <div style="height:50%; display: inline-flex; flex-direction:column-reverse;">
+                    <a href="#">
+                        <img class="img_button" src="img/magic.png" style="width: 3.5vw; margin-right: 0.5vw;" onclick="use_frame();" title="click to use these frames">
+                    </a>
+                </div>
+            </div>
+            <div class="grid-item description" id="description">
+                <div class="name">Term description</div>
+                <div id="description_show_area"></div>
+            </div>
+            <div class="grid-item tmp_area" id="tmp_area">
+                <div class="name">You can put term here temporarily</div>
+                <ul id="tmp_ul1" class="list-group tmp_ul"></ul>
+                <ul id="tmp_ul2" class="list-group tmp_ul"></ul>
+            </div>
+         </div>
+         <!--
+        <div id="sign_in_window">
+            <p style="text-align: left; margin-top: 5vh;">This website is for research study. The uploaded images and modified stories will be collected for only research purpose. If you have any other question, please contact us at joe32140@iis.sinica.edu.tw</p>
+            <label style="display: block; font-size: 2em; margin-top: 5vh; margin-bottom: 1vh;">Please enter your name</label>
+            <input type="text" name="" value="" maxlength="25" style="margin: 0 auto; font-size: 2em;" autofocus id="user_name"/>
+            <button style="margin-left: 1vw;" id="send_name">Send</button>
+        </div>
+        -->
+        <img id="waiting_img" src="img/waiting.gif" style="display: none; z-index: 100; position: absolute; top: 10%; left: 30%;">
+        <img id="waiting_img_down" src="img/waiting.gif" style="display: none; z-index: 100; position: absolute; bottom: 10%; left: 30%;">
+        <script src="frame_handling.js"></script>
+        <script src="file_handling.js"></script>     
+        <script src="main.js"></script>
+        
+    </body>
+</html>
