@@ -47,21 +47,6 @@ function b64toBlob(b64Data, contentType, sliceSize) {
 }
 
 function submit(){
-    //console.log('click submit');
-
-    // remove previous state
-    /*
-    for (index=1; index <= 5; index ++){
-        var usedFrameList = document.getElementById('usedFrameList'+String(index));
-        while (usedFrameList.firstChild) {
-            usedFrameList.removeChild(usedFrameList.firstChild);
-        }
-    }
-    for (index=1; index <= 5; index ++){
-        var sep_story = document.getElementById('sep_story'+String(index));
-        sep_story.innerHTML = "";
-    }
-    */
 
     // order files
     var childs = document.getElementById("input_images").childNodes;
@@ -165,65 +150,6 @@ FileAPI.event.on(choose, 'change', function (evt){
 function add_from_device(){
     var input_file = document.getElementById("input_file");
     input_file.click();
-    
-    /*
-    if (!navigator.mediaDevices) {
-        alert ("Media device not supported. If you are on an iphone, please consider IOS 11 or above and using Safari.");
-    }
-    $("#camera_div").css("display", "flex");
-    $("#default_images_and_add").css("display", "none");
-    // use MediaDevices API
-    // docs: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    var video = document.getElementById("camera_stream");
-    var button = document.getElementById("camera_take_picture");
-    button.disabled = false;
-    var canvas = document.getElementById("camera_result");
-    video.style.display = 'initial';
-    canvas.style.display = 'none';
-    var canvasWidth = video.offsetWidth, canvasHeight = video.offsetHeight;
-    console.log('width', canvasWidth, 'height', canvasHeight);
-
-    navigator.mediaDevices.getUserMedia({video: {width: 640, facingMode: "environment"}, })
-        // permission granted:
-        .then(function(stream) {
-            video.srcObject = stream;
-            video.play();
-            button.onclick = function() {
-
-                var context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvasWidth, canvasHeight);
-                video.style.display = 'none';
-                canvas.style.display = 'initial';
-                var imgsrc = canvas.toDataURL("image/jpeg");
-                var img = document.createElement("img");
-                img.src = imgsrc;
-                var track = stream.getTracks()[0];
-                track.stop();
-                var default_images = document.getElementById("default_images");
-                $("#camera_div").css("display", "none");
-                $("#default_images_and_add").css("display", "initial");
-                var size = (document.getElementById("default_images").clientWidth) / 3.5;
-                img.width = size; 
-                img.height = size; 
-                img.className += 'un_select_image';
-                img.onclick = function(e){
-                    if (this.classList.contains('un_select_image')){
-                        this.classList.remove('un_select_image');
-                        this.classList.add('selected_image');
-                    }else if(this.classList.contains('selected_image')){
-                        this.classList.remove('selected_image');
-                        this.classList.add('un_select_image');
-                    }
-                }
-                default_images.prepend(img);
-
-            }
-        })
-        // permission denied:
-        .catch(function(error) {
-            console.log('Could not access the camera. Error: ' + error.name + error.toString());
-        });
-        */
 }
 function use_these_images(){
     var images = document.getElementById("default_images").childNodes;
@@ -300,22 +226,180 @@ socket.on('frames', function (frameObjLists){
     
     var images_and_frames = document.getElementById("images_and_frames");
     for (let i=0; i<frameObjLists.length; i++){
-        console.log('before', images);
+        //console.log('before', images);
         put_image_and_frame(images_and_frames, images[i], frameObjLists[i]);
-        console.log('after', images);
+        //console.log('after', images);
     }
     
 });
 
+function color_frame(div) {
+    tokens = div.innerHTML.split("_");
+    var new_string = [];
+    for (var index=0; index<tokens.length-1; index++){
+        new_string.push(tokens[index]);
+    }
+    new_string = new_string.join("_");
+    div.innerHTML = new_string;
+    if (tokens[tokens.length-1] == "NOUN") {
+        div.className += " noun_type";
+    } 
+    else {
+        div.className += " frame_type";
+    }
+    if (new_string.length > 10){
+        div.className += " small_font_terms";
+    }
+    
+    return div;
+}
+
+function add_term(add_image, minus_image, image_and_terms_div){
+    //console.log('this1', add_image);
+    if (add_image.adding_flag == true){
+        return
+    }
+    if (minus_image.minus_flag == true){
+        return
+    }
+    add_image.adding_flag = true;
+    //console.log(add_image);
+    var single_frame = document.createElement("div");
+    single_frame.onclick = single_frame.contentEditable='true';
+    single_frame.className += "single_frame";
+    // black-tech!!!!
+    setTimeout(function() {
+        single_frame.focus();
+    }, 0);
+    
+    single_frame.addEventListener('keypress', function(evt) {
+        if (evt.which === 13) {
+            evt.preventDefault();
+        }
+    });
+
+    single_frame.addEventListener("blur", function(evt){
+        console.log(single_frame);
+        if (single_frame.innerHTML == ""){
+            image_and_terms_div.removeChild(single_frame);
+            add_image.adding_flag = false;
+        };
+    });
+
+    single_frame.addEventListener('DOMSubtreeModified',function(e){
+        var query = single_frame.innerHTML;
+        if (query.length == 0) {
+            console.log('return');
+            var to_delete_elements = image_and_terms_div.getElementsByClassName("suggestion");
+            while (to_delete_elements[0]) {
+                to_delete_elements[0].parentNode.removeChild(to_delete_elements[0]);
+            }
+            return;
+        }
+        
+        socket.emit("search", String(query), function(results){
+            //console.log('now in search', single_frame.innerHTML);
+            //console.log('query', query);
+            if (single_frame.innerHTML != query) {
+                return;
+            }
+            console.log('result is', results);
+            var to_delete_elements = image_and_terms_div.getElementsByClassName("suggestion");
+            while (to_delete_elements[0]) {
+                to_delete_elements[0].parentNode.removeChild(to_delete_elements[0]);
+            }
+            
+            // show frame suggestion
+            for (let i=0; i<results.length; i++){
+                var suggestion = document.createElement("div");
+                suggestion.className += 'suggestion';
+                suggestion.innerHTML = results[i].name;
+                suggestion.addEventListener("click", function(e){
+                    this.className += " selected";
+                    //console.log('in suggestion.click()');
+                    single_frame.innerHTML = "";
+                    var new_single_frame = document.createElement("div");
+                    new_single_frame.className += " single_frame";
+                    new_single_frame.innerHTML = this.innerHTML;
+                    new_single_frame = color_frame(new_single_frame);
+                    //console.log(new_single_frame);
+                    image_and_terms_div.insertBefore(new_single_frame, image_and_terms_div.childNodes[2]);
+                    //finish adding frame
+                    var to_delete_elements = image_and_terms_div.getElementsByClassName("suggestion");
+                    while (to_delete_elements[0]) {
+                        to_delete_elements[0].parentNode.removeChild(to_delete_elements[0]);
+                    }
+                    image_and_terms_div.removeChild(single_frame);
+                    add_image.adding_flag = false;
+                });
+                image_and_terms_div.insertBefore(suggestion, image_and_terms_div.childNodes[3+i]);
+                
+            }
+        });   
+    });
+
+    image_and_terms_div.insertBefore(single_frame, image_and_terms_div.childNodes[2]);  
+}
+function remove_term(add_img, minus_img, image_and_terms_div){
+    if (add_img.adding_flag == true){
+        return
+    }
+    if (minus_img.minus_flag == true){
+        for (let i=0; i<image_and_terms_div.childNodes.length; i++) {
+            var div = image_and_terms_div.childNodes[i];
+            console.log(div);
+            var button = div.querySelector("button");
+            if (button == null) {
+                // the image, plus and minus image area and searching single frame 
+                // have no button;
+                continue;
+            }
+            console.log(button);
+            div.removeChild(button);   
+        }
+        minus_img.minus_flag = false;
+    }
+    else{
+        minus_img.minus_flag = true;
+        for (let i=0; i<image_and_terms_div.childNodes.length; i++) {
+            var div = image_and_terms_div.childNodes[i];
+            if (div.classList.contains("single_frame")){
+                var removeButton = document.createElement("button");
+                removeButton.innerHTML = "X";
+                removeButton.className += " remove_button"
+                removeButton.addEventListener("click", function(e){
+                    this.parentNode.parentNode.removeChild(this.parentNode);
+                });
+                div.appendChild(removeButton);
+            }
+        }
+    }
+}
+
 function put_image_and_frame(result_DOM, image, frameList){
     var div = document.createElement("div");
     div.className += 'image_and_frame';
-    console.log(image);
+    //console.log(image);
     div.appendChild(image);
+    var button_div = document.createElement("div");
+    button_div.className += "button_div";
+    var add_img = document.createElement("img");
+    add_img.src = "img/iconfinder_add_126583.png/";
+    add_img.adding_flag = false;
+    var minus_img = document.createElement("img");
+    minus_img.src = "img/iconfinder_icon-minus-round_211863.png";
+    minus_img.minus_flag = false;
+    add_img.addEventListener("click", function(e){add_term(add_img, minus_img, div)});
+    button_div.appendChild(add_img);
+    minus_img.addEventListener("click", function(e){remove_term(add_img, minus_img, div)});
+    button_div.appendChild(minus_img);
+    div.appendChild(button_div);
+
     for (let i=0; i<frameList.length; i++){
         var single_frame = document.createElement("div");
         single_frame.classList.add("single_frame");
         single_frame.innerHTML = frameList[i].name;
+        single_frame = color_frame(single_frame);
         div.appendChild(single_frame);
     }
     result_DOM.appendChild(div);
@@ -336,14 +420,14 @@ function generate_story(){
         for (let j=0; j<frames.length; j++){
             frame = frames[j]
             frame_string = frame.innerHTML.split('<div>')[0];
-            /*
+            
             if (frame.classList.contains("noun_type")) {
-                frame += "_NOUN";
+                frame_string += "_NOUN";
             }
             else if (frame.classList.contains("frame_type")) {
-                frame += "_Frame";
+                frame_string += "_Frame";
             }
-            */
+            
            arr.push(frame_string);
         }
         framesList.push(arr);
