@@ -1,5 +1,10 @@
 // below is image part
 function add(){
+    var input_images = document.getElementById("input_images");
+    if (input_images.childNodes.length >= 5) {
+        alert("can only use 5 images");
+        return;
+    }
     $("#input_images").css('opacity', 0.0);
     $("#button_area").css('opacity', 0.0);
 
@@ -156,7 +161,9 @@ function use_these_images(){
     var selected_images = [];
     for (let i=0; i<images.length; i++) {
         if (images[i].classList.contains('selected_image')){
-            selected_images.push(images[i]);
+            var image = images[i].cloneNode(true);
+            console.log(image);
+            selected_images.push(image);
         }
     }
     if (selected_images.length != 5){
@@ -384,7 +391,7 @@ function put_image_and_frame(result_DOM, image, frameList){
     var button_div = document.createElement("div");
     button_div.className += "button_div";
     var add_img = document.createElement("img");
-    add_img.src = "img/iconfinder_add_126583.png/";
+    add_img.src = "img/iconfinder_add_126583.png";
     add_img.adding_flag = false;
     var minus_img = document.createElement("img");
     minus_img.src = "img/iconfinder_icon-minus-round_211863.png";
@@ -530,4 +537,12 @@ function put_storys(height, storys){
         DOM.appendChild(div);
     }
     
+}
+
+function clear_img(){
+    var input_images = document.getElementById("input_images");
+    while (input_images.firstChild) {
+        input_images.removeChild(input_images.firstChild);
+    }
+
 }
