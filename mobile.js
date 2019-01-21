@@ -426,7 +426,7 @@ function generate_story(){
         var arr = [];
         for (let j=0; j<frames.length; j++){
             frame = frames[j]
-            frame_string = frame.innerHTML.split('<div>')[0];
+            frame_string = frame.innerHTML.split('<div>')[0].split('<button')[0];
             
             if (frame.classList.contains("noun_type")) {
                 frame_string += "_NOUN";
