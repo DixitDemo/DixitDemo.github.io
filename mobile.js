@@ -168,6 +168,11 @@ function use_these_images(){
     }
     if (selected_images.length != 5){
         alert('Can only use 5 images');
+        for (let i=0; i<images.length; i++) {
+            if (images[i].classList.contains('selected_image')){
+                images[i].classList.remove('selected_image');
+            }
+        }
         return;
     }
     else {
