@@ -171,6 +171,7 @@ function use_these_images(){
         for (let i=0; i<images.length; i++) {
             if (images[i].classList.contains('selected_image')){
                 images[i].classList.remove('selected_image');
+                images[i].classList.add('un_select_image');
             }
         }
         return;
